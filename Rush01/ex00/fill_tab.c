@@ -6,15 +6,16 @@
 /*   By: jguaglio <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 16:46:33 by jguaglio          #+#    #+#             */
-/*   Updated: 2024/07/27 18:52:20 by jguaglio         ###   ########.fr       */
+/*   Updated: 2024/07/28 20:26:25 by jguaglio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 
-int	ft_count_int(int tab[4][4], int nb);
+int	ft_count_int(int ***tab, int nb);
 
-int	*ft_search_nb(int tab[4][4], int nb)
+// Find the position of identical number on the grid
+int	*ft_search_nb(int ***tab, int nb)
 {
 	int	*res;
 	int	row;
@@ -30,7 +31,7 @@ int	*ft_search_nb(int tab[4][4], int nb)
 		col = 0;
 		while (col < 4)
 		{
-			if (tab[row][col] == nb)
+			if (tab[row][col][0] == nb)
 				res[row] = col;
 			col++;
 		}
@@ -39,7 +40,8 @@ int	*ft_search_nb(int tab[4][4], int nb)
 	return (res);
 }
 
-void	ft_fill_tab_int(int tab[4][4], int nb)
+// Fill the grid with the fourth identical number
+void	ft_fill_tab_int(int ***tab, int nb)
 {
 	int	*pt_res;
 	int	row;
@@ -48,7 +50,7 @@ void	ft_fill_tab_int(int tab[4][4], int nb)
 
 	i = 0;
 	col = 1;
-	if (ft_count_int(tab, 4) != 3)
+	if (ft_count_int(tab, nb) != 3)
 		return ;
 	pt_res = ft_search_nb(tab, nb);
 	while (i < 4)
@@ -62,11 +64,13 @@ void	ft_fill_tab_int(int tab[4][4], int nb)
 		}
 		i++;
 	}
-	tab[row][col] = nb;
+	if (tab[row][col - 1][0] == 0 && tab[row][col - 1][nb] == nb)
+		tab[row][col - 1][0] = nb;
 	free(pt_res);
 }
 
-int	ft_one_0(int tab[4][4], int row_or_col,int nb)
+// Find the single 0 in line and return its position
+int	ft_one_0(int ***tab, int row_or_col, int nb)
 {
 	int	position;
 	int	i;
@@ -75,15 +79,14 @@ int	ft_one_0(int tab[4][4], int row_or_col,int nb)
 	i = 0;
 	while (i < 4)
 	{
-		if (tab[nb][i] == 0 && row_or_col == 1)
+		if (tab[nb][i][0] == 0 && row_or_col == 1)
 		{
-			
 			if (position != -1)
 				return (-1);
 			position = i;
 		}
-		if (tab[i][nb] == 0 && row_or_col == 2)
-		{	
+		if (tab[i][nb][0] == 0 && row_or_col == 2)
+		{
 			if (position != -1)
 				return (-1);
 			position = i;
@@ -93,7 +96,8 @@ int	ft_one_0(int tab[4][4], int row_or_col,int nb)
 	return (position);
 }
 
-void	ft_fill_tab_one_case(int tab[4][4])
+// Complete the last 0 in line by the unused number
+void	ft_fill_tab_one_case(int ***tab)
 {
 	int	i;
 	int	sum;
@@ -103,32 +107,16 @@ void	ft_fill_tab_one_case(int tab[4][4])
 	{
 		if (ft_one_0(tab, 1, i) != -1)
 		{
-			sum = tab[i][0] +tab[i][1] +tab[i][2] +tab[i][3];
-			tab[i][ft_one_0(tab, 1, i)] = 10 - sum;
+			sum = tab[i][0][0] + tab[i][1][0] + tab[i][2][0]
+				+ tab[i][3][0];
+			tab[i][ft_one_0(tab, 1, i)][0] = 10 - sum;
 		}
 		if (ft_one_0(tab, 2, i) != -1)
 		{
-			sum = tab[0][i] +tab[1][i] +tab[2][i] +tab[3][i];
-			tab[ft_one_0(tab, 2, i)][i] = 10 - sum;
+			sum = tab[0][i][0] + tab[1][i][0] + tab[2][i][0]
+				+ tab[3][i][0];
+			tab[ft_one_0(tab, 2, i)][i][0] = 10 - sum;
 		}
 		i++;
 	}
 }
-/*
-int     display_map(int tab[4][4]);
-#include <stdio.h>
-
-int     main(void)
-{
-        int     tab[4][4] = {
-        {4,3,2,0},
-        {2,4,0,0},
-        {1,0,0,0},
-        {0,2,4,0},
-        };
-
-	ft_fill_tab_int(tab, 4);
-	ft_fill_tab_one_case(tab);
-	display_map(tab);
-}
-*/

@@ -5,127 +5,134 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jguaglio <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/23 16:11:07 by jguaglio          #+#    #+#             */
-/*   Updated: 2024/07/23 17:42:40 by jguaglio         ###   ########.fr       */
+/*   Created: 2024/07/23 09:23:30 by jguaglio          #+#    #+#             */
+/*   Updated: 2024/07/30 10:33:38 by jguaglio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_strlen(char *str)
-{
-        int	i;
+#include <unistd.h>
 
-	i = 0;
-	while (str[i] != '\0')
-		i++;
-	return (i);
-}
+int	ft_is_in_base(char *base, char c);
 
-int	ft_index_of(char c, char *str)
+int	ft_find_max_indice(char *str, char *base)
 {
 	int	i;
 
 	i = 0;
-	while (str[i] != '\0')
+	while (str[i])
 	{
-		if (str[i] == c)
-			return (i);
+		if (ft_is_in_base(base, str[i] == 0))
+			return (i - 1);
 		i++;
 	}
-	return (-1);
-
+	return (i);
 }
 
-int	ft_char_is_space_number_signe(char c, int *phase, char *base)
+int	ft_is_in_base(char *base, char c)
 {
-	if (*phase == 1 || *phase == 0)
+	int	i;
+
+	i = 0;
+	while (base[i])
 	{
-		if ((c == '+' || c == '-'))
-		{
-			*phase = 1;
+		if (base[i] == c)
 			return (1);
-		}
-	}
-	if (*phase == 0)
-	{
-		if (c == '\n' || c == '\t' || c == '\v' || c == '\f' || c == '\r')
-			return (1);
-		else if (c == 32)
-			return (1);
-	}
-	if (ft_index_of(c, base) != -1)
-	{
-		*phase = 2;
-		return (1);
+		i++;
 	}
 	return (0);
 }
 
-int	check_indice_max(char *base)
+int	test_base(char *base)
 {
 	int	i;
-	int	phase;
+	int	j;
+	int	size;
+
+	size = 0;
+	while (base[size])
+		size++;
+	if (size <= 1)
+		return (0);
+	i = 0;
+	while (i < size)
+	{
+		if (base[i] == '-' || base[i] == '+' || base[i] == 32
+			|| (base[i] >= '\t' && base[i] <= '\r'))
+			return (0);
+		j = 0;
+		while (base[j] != '\0')
+		{
+			if (base[i] == base[j] && j != i)
+				return (0);
+			j++;
+		}
+		i++;
+	}
+	return (1);
+}
+
+void	ft_increment_nbr(char *base, char nb, long *nbr, int indice_nb)
+{
+	int	i;
+	int	indice;
+	int	j;
+	int	res;
 
 	i = 0;
-	while (base[i] != '\0')
+	res = 1;
+	j = 0;
+	while (base[i])
 	{
-		phase = 0;
-		if (ft_char_is_space_number_signe(base[i], &phase, base) == 0)
-			return (i-1);
+		if (nb == base[i])
+			indice = i;
 		i++;
 	}
-}
-
-int	puissance(int	nbr1, int puiss)
-{
-	int	i;
-	int	nbr;
-
-	i = 1;
-	nbr = 1;
-	if (puiss == 0)
-		return (1);
-	while (i != puiss)
+	if ((indice_nb) != 0)
 	{
-		nbr = nbr * nbr1;
-		i++;
+		while (j < indice_nb)
+		{
+			res = res * i;
+			j++;
+		}
 	}
-	return (nbr);
+	*nbr = *nbr + (indice * res);
 }
-
-
 
 int	ft_atoi_base(char *str, char *base)
 {
-	int	i;
-	int	phase;
-	int	nbr;
-	int	signe;
+	int		i;
+	int		signe;
+	int		max_indice;
+	long	nbr;
 
 	signe = 0;
 	nbr = 0;
 	i = 0;
-	phase = 0;
-	while (str[i] != '\0' && ft_char_is_space_number_signe(str[i], &phase, base) == 1)
-	{
-		if (str[i] == '-')
+	if (base == NULL || test_base(base) == 0)
+		return (0);
+	while (str[i] == 32 || (str[i] >= '\t' && str[i] <= '\r'))
+		i++;
+	while (str[i] == '+' || str[i] == '-')
+		if (str[i++] == '-')
 			signe++;
-		else if (ft_index_of(str[i], base) != -1)
-		{
-			nbr = nbr + ((ft_index_of(str[i],base)) * ( puissance(ft_strlen(base),check_indice_max(base) - i)));
-		}
+	max_indice = ft_find_max_indice(&str[i], base);
+	while (ft_is_in_base(base, str[i]) == 1 && str[i])
+	{
+		ft_increment_nbr(base, str[i], &nbr, -1 + max_indice--);
 		i++;
 	}
 	if (signe % 2 == 0)
 		return (nbr);
 	return (-nbr);
 }
-
+/*
 #include <stdio.h>
 
 int	ft_atoi_base(char *str, char *base);
 
 int	main(void)
 {
+	printf("45:%d\n", ft_atoi_base("101101", "01"));
 	printf("42:%d\n", ft_atoi_base("2a", "0123456789abcdef"));
 	printf("-42:%d\n", ft_atoi_base("   --------+-2a", "0123456789abcdef"));
 	printf("42:%d\n", ft_atoi_base("   -+-2a", "0123456789abcdef"));
@@ -135,4 +142,4 @@ int	main(void)
 	printf("0:%d\n", ft_atoi_base("   --------+-2a", "0"));
 	printf("0:%d\n", ft_atoi_base("   --------+-2a", "+-0"));
 	printf("0:%d\n", ft_atoi_base("   --------+-2a", "\t01"));
-}
+}*/

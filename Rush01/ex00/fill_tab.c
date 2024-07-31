@@ -49,7 +49,7 @@ void	ft_fill_tab_int(int ***tab, int nb)
 	int	i;
 
 	i = 0;
-	col = 1;
+	col = 0;
 	if (ft_count_int(tab, nb) != 3)
 		return ;
 	pt_res = ft_search_nb(tab, nb);
@@ -64,8 +64,8 @@ void	ft_fill_tab_int(int ***tab, int nb)
 		}
 		i++;
 	}
-	if (tab[row][col - 1][0] == 0 && tab[row][col - 1][nb] == nb)
-		tab[row][col - 1][0] = nb;
+	if (tab[row][col][0] == 0 && tab[row][col][nb] == nb)
+		tab[row][col][0] = nb;
 	free(pt_res);
 }
 

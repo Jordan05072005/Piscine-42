@@ -6,7 +6,7 @@
 /*   By: jguaglio <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 09:23:30 by jguaglio          #+#    #+#             */
-/*   Updated: 2024/07/30 10:33:38 by jguaglio         ###   ########.fr       */
+/*   Updated: 2024/07/31 12:45:36 by jguaglio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	ft_find_max_indice(char *str, char *base)
 	i = 0;
 	while (str[i])
 	{
-		if (ft_is_in_base(base, str[i] == 0))
+		if (ft_is_in_base(base, str[i]) == 0)
 			return (i - 1);
 		i++;
 	}
@@ -108,7 +108,7 @@ int	ft_atoi_base(char *str, char *base)
 	signe = 0;
 	nbr = 0;
 	i = 0;
-	if (base == NULL || test_base(base) == 0)
+	if (base == NULL || str == NULL || test_base(base) == 0)
 		return (0);
 	while (str[i] == 32 || (str[i] >= '\t' && str[i] <= '\r'))
 		i++;
